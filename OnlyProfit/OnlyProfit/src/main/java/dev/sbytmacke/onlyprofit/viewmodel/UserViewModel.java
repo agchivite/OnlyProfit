@@ -189,6 +189,7 @@ public class UserViewModel {
 
         if (numUsers == 0) {
             GlobalStats.medianTotalBets = 0;
+            return;
         }
 
         List<UserDTO> sortedAllUsers = allUsers.stream()
