@@ -14,15 +14,9 @@ import java.util.Comparator;
 import java.util.List;
 
 public class UserViewModel {
-    public static final int USER_FILTER_RELABLE = 60;
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final UserRepository<UserEntity, String> repository;
-    public double goodAverageAllUsersSuccessRate;
-    private double averageSuccessRate;
-    public double badAverageAllUsersSuccessRate;
-    public int medianTotalBets;
     private Boolean firstRun = true;
-
 
     public UserViewModel(UserRepository<UserEntity, String> repository) {
         logger.info("Initializing UserViewModel");
@@ -32,13 +26,13 @@ public class UserViewModel {
     }
 
     private void calculateThirdsSuccessRate() {
-        averageSuccessRate = getAverageSuccessRate(repository.getAll());
-        double portionSuccessRate = averageSuccessRate / 3;
-        badAverageAllUsersSuccessRate = averageSuccessRate - portionSuccessRate;
-        goodAverageAllUsersSuccessRate = averageSuccessRate + portionSuccessRate;
-        System.out.println("badThirdSuccessRate: " + badAverageAllUsersSuccessRate);
-        System.out.println("averageSuccessRate: " + averageSuccessRate);
-        System.out.println("goodSuccessRate: " + goodAverageAllUsersSuccessRate);
+        GlobalStats.averageSuccessRate = getAverageSuccessRate(repository.getAll());
+        double portionSuccessRate = GlobalStats.averageSuccessRate / 3;
+        GlobalStats.badAverageAllUsersSuccessRate = GlobalStats.averageSuccessRate - portionSuccessRate;
+        GlobalStats.goodAverageAllUsersSuccessRate = GlobalStats.averageSuccessRate + portionSuccessRate;
+        System.out.println("badThirdSuccessRate: " + GlobalStats.badAverageAllUsersSuccessRate);
+        System.out.println("averageSuccessRate: " + GlobalStats.averageSuccessRate);
+        System.out.println("goodSuccessRate: " + GlobalStats.goodAverageAllUsersSuccessRate);
     }
 
     public void saveUser(UserEntity userEntity) {
@@ -190,13 +184,11 @@ public class UserViewModel {
         return Math.round(totalPercentSuccess / users.size() * 100) / 100.0;
     }
 
-    private int calculateMedianTotalBets(List<UserDTO> allUsers) {
+    private void calculateMedianTotalBets(List<UserDTO> allUsers) {
         int numUsers = allUsers.size();
 
         if (numUsers == 0) {
-            medianTotalBets = 0;
-            GlobalStats.medianTotalBets = medianTotalBets;
-            return medianTotalBets;
+            GlobalStats.medianTotalBets = 0;
         }
 
         List<UserDTO> sortedAllUsers = allUsers.stream()
@@ -215,19 +207,11 @@ public class UserViewModel {
         }
 
         if (Boolean.TRUE.equals(firstRun)) {
-            medianTotalBets = (int) Math.round(medianValue);
-            GlobalStats.medianTotalBets = medianTotalBets;
+            GlobalStats.medianTotalBets = (int) Math.round(medianValue);
             firstRun = false;
         }
 
         System.out.println("medianTotalBets: " + GlobalStats.medianTotalBets);
-        return medianTotalBets;
-    }
-
-    public void initCalculateGlobalData() {
-        logger.info("initCalculateGlobalData");
-        calculateMedianTotalBets(repository.getAll());
-        calculateThirdsSuccessRate();
     }
 
     public void refreshData(List<UserDTO> users) {

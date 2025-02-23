@@ -7,6 +7,7 @@ import dev.sbytmacke.onlyprofit.dto.UserDTO;
 import dev.sbytmacke.onlyprofit.models.UserEntity;
 import dev.sbytmacke.onlyprofit.routes.RoutesManager;
 import dev.sbytmacke.onlyprofit.utils.DateFormatterUtils;
+import dev.sbytmacke.onlyprofit.utils.GlobalStats;
 import dev.sbytmacke.onlyprofit.utils.TimeUtils;
 import dev.sbytmacke.onlyprofit.viewmodel.UserViewModel;
 import javafx.collections.FXCollections;
@@ -246,9 +247,10 @@ public class MainViewController {
         imageRefresh.setOnMouseExited(event -> imageRefresh.setOpacity(1));
         imageRefresh.setOnMouseClicked(event -> {
             logger.info("Refreshing data");
-            userViewModel.initCalculateGlobalData();
+            userViewModel.refreshData(userViewModel.getAll());
+            //tableUsers.setItems(FXCollections.observableArrayList(userViewModel.getAll()));
             updateMainTable();
-            updateRankingTable();
+
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Actualización");
             alert.setHeaderText("Actualización ✅");
@@ -257,7 +259,7 @@ public class MainViewController {
         });
 
         // Evento para abrir la ventana modal al hacer clic en una fila de la tabla
-        //clickEvents();
+        clickEvents();
 
         starCheckBox.setOnAction(event -> updateMainTable());
 
@@ -424,7 +426,7 @@ public class MainViewController {
                 throw new RuntimeException(e);
             }
         });
-        tableUsersRanking.setOnMouseClicked(event -> {
+        /*tableUsersRanking.setOnMouseClicked(event -> {
             RoutesManager routesManager = new RoutesManager();
             try {
                 UserDTO selectedItem = tableUsersRanking.getSelectionModel().getSelectedItem();
@@ -440,7 +442,7 @@ public class MainViewController {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-        });
+        });*/
     }
 
     private void updateRankingTable() {
@@ -624,7 +626,7 @@ public class MainViewController {
     public List<UserDTO> filterStartsAndRakingUsersReliable(List<UserDTO> usersToFilter) {
         return usersToFilter.stream()
                 .filter(user -> user.getPercentReliable() >= DECISION_STRICT_FILTER_RELIABLE)
-                .filter(user -> user.getTotalBets() >= userViewModel.medianTotalBets)
+                .filter(user -> user.getTotalBets() >= GlobalStats.medianTotalBets)
                 .limit(NUM_USERS_TO_SHOW_RANKING)
                 .collect(Collectors.toList());
     }
@@ -639,18 +641,18 @@ public class MainViewController {
                 if (item == null) {
                     setStyle("");
                 } else {
-                    if (item.getPercentReliable() <= userViewModel.badAverageAllUsersSuccessRate) {
+                    if (item.getPercentReliable() <= GlobalStats.badAverageAllUsersSuccessRate) {
                         setStyle("-fx-background-color: #ff6161;");
-                    } else if (item.getPercentReliable() > userViewModel.badAverageAllUsersSuccessRate && item.getPercentReliable() <= userViewModel.goodAverageAllUsersSuccessRate) {
+                    } else if (item.getPercentReliable() > GlobalStats.badAverageAllUsersSuccessRate && item.getPercentReliable() <= GlobalStats.goodAverageAllUsersSuccessRate) {
                         setStyle("-fx-background-color: orange;");
-                    } else if (item.getPercentReliable() > userViewModel.goodAverageAllUsersSuccessRate) {
+                    } else if (item.getPercentReliable() > GlobalStats.goodAverageAllUsersSuccessRate) {
                         setStyle("-fx-background-color: #53db78;");
                     } else {
                         setStyle("-fx-background-color: #ffffff;");
                     }
 
                     // Filtro especial para los verdes que fallen la media
-                    if (item.getPercentReliable() > userViewModel.goodAverageAllUsersSuccessRate && item.getTotalBets() < userViewModel.medianTotalBets) {
+                    if (item.getPercentReliable() > GlobalStats.goodAverageAllUsersSuccessRate && item.getTotalBets() < GlobalStats.medianTotalBets) {
                         setStyle("-fx-background-color: orange;");
                     }
                 }
@@ -739,6 +741,7 @@ public class MainViewController {
         Boolean onFilterByUserDate = onFilterDataTableByUserDate(newUsername, newTime, newDateOfWeek);
         Boolean onFilterByUserTime = onFilterDataTableByUserTime(newUsername, newTime, newDateOfWeek);
         Boolean onFilterByUserDateTime = onFilterDataTableByUserDateTime(newUsername, newTime, newDateOfWeek);
+
         orderByTotalSuccessBets(tableUsers);
 
         if (!onFilterByDate && !onFilterByTime && !onFilterByDateTime && !onFilterByUserDate && !onFilterByUserTime && !onFilterByUserDateTime) {
@@ -746,8 +749,8 @@ public class MainViewController {
         }
 
         List<UserDTO> filteredUsers = filterStartsAndRakingUsersReliable(tableUsers.getItems());
-        setStarTopUsers(filteredUsers);
-        updatePieChart(filteredUsers);
+        //setStarTopUsers(filteredUsers);
+        //updatePieChart(filteredUsers);
 
         if (starCheckBox.isSelected()) {
             tableUsers.setItems(FXCollections.observableArrayList(filteredUsers));
@@ -850,11 +853,11 @@ public class MainViewController {
             return;
         }
         textFinalResultPercentSuccess.setText(percentSuccess + "%");
-        if (percentSuccess <= userViewModel.badAverageAllUsersSuccessRate) {
+        if (percentSuccess <= GlobalStats.badAverageAllUsersSuccessRate) {
             textFinalResultPercentSuccess.setTextFill(Color.RED);
-        } else if (percentSuccess <= userViewModel.goodAverageAllUsersSuccessRate) {
+        } else if (percentSuccess <= GlobalStats.goodAverageAllUsersSuccessRate) {
             textFinalResultPercentSuccess.setTextFill(Color.ORANGE);
-        } else if (percentSuccess > userViewModel.goodAverageAllUsersSuccessRate) {
+        } else if (percentSuccess > GlobalStats.goodAverageAllUsersSuccessRate) {
             textFinalResultPercentSuccess.setTextFill(Color.GREEN);
         } else {
             textFinalResultPercentSuccess.setTextFill(Color.WHITE);
@@ -927,16 +930,16 @@ public class MainViewController {
 
     private void extractedUserByRadioButtonFilter(List<UserDTO> usersToShow) {
         if (radioButtonHideGreen.isSelected()) {
-            usersToShow.removeIf(user -> user.getPercentReliable() >= userViewModel.goodAverageAllUsersSuccessRate && user.getTotalBets() >= userViewModel.medianTotalBets);
+            usersToShow.removeIf(user -> user.getPercentReliable() >= GlobalStats.goodAverageAllUsersSuccessRate && user.getTotalBets() >= GlobalStats.medianTotalBets);
         }
 
         if (radioButtonHideOrange.isSelected()) {
-            usersToShow.removeIf(user -> user.getPercentReliable() > userViewModel.badAverageAllUsersSuccessRate && user.getPercentReliable() <= userViewModel.goodAverageAllUsersSuccessRate);
-            usersToShow.removeIf(user -> user.getTotalBets() < userViewModel.medianTotalBets);
+            usersToShow.removeIf(user -> user.getPercentReliable() > GlobalStats.badAverageAllUsersSuccessRate && user.getPercentReliable() <= GlobalStats.goodAverageAllUsersSuccessRate);
+            usersToShow.removeIf(user -> user.getTotalBets() < GlobalStats.medianTotalBets);
         }
 
         if (radioButtonHideRed.isSelected()) {
-            usersToShow.removeIf(user -> user.getPercentReliable() <= userViewModel.badAverageAllUsersSuccessRate);
+            usersToShow.removeIf(user -> user.getPercentReliable() <= GlobalStats.badAverageAllUsersSuccessRate);
         }
     }
 
@@ -1147,6 +1150,7 @@ public class MainViewController {
         radioButtonGood.setSelected(false);
         radioButtonBad.setSelected(false);
 
+        userViewModel.refreshData(userViewModel.getAll());
         updateMainTable();
     }
 

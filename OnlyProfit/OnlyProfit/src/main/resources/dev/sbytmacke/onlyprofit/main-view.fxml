@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<VBox alignment="TOP_CENTER" style="-fx-background-color: #1e1f22;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dev.sbytmacke.onlyprofit.controllers.MainViewController">
+<VBox alignment="TOP_CENTER" prefHeight="922.0" prefWidth="1393.0" style="-fx-background-color: #1e1f22;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dev.sbytmacke.onlyprofit.controllers.MainViewController">
 	<MenuBar style="-fx-background-color: #8f99a4;">
 		<menus>
 			<Menu mnemonicParsing="false" text="Menú" visible="false">
@@ -46,125 +46,11 @@
 	<HBox alignment="TOP_CENTER">
 		<children>
 			<Separator orientation="VERTICAL" prefHeight="669.0" prefWidth="6.0" />
-         <VBox alignment="TOP_CENTER" prefHeight="669.0" prefWidth="558.0">
-            <children>
-               <Label fx:id="labelTitle1" alignment="CENTER" contentDisplay="CENTER" prefHeight="96.0" style="-fx-background-color: #1e1f22;" text="Mejores usuarios" textFill="#8f99a4" textOverrun="CLIP">
-                  <font>
-                     <Font name="Arial Rounded MT Bold" size="45.0" />
-                  </font>
-               </Label>
-               <VBox alignment="CENTER" prefHeight="400.0" prefWidth="558.0" style="-fx-background-color: #313338;">
-                  <children>
-                     <Text fx:id="noDataMessagePieChart" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="No hay datos destacables">
-                        <font>
-                           <Font size="16.0" />
-                        </font>
-                     </Text>
-            			<PieChart fx:id="pieChart" title="Titulo de prueba" />
-                  </children>
-               </VBox>
-               <Separator />
-               <HBox alignment="CENTER_LEFT" style="-fx-background-color: #313338;">
-                  <padding>
-                     <Insets bottom="5.0" top="5.0" />
-                  </padding>
-                  <children>
-                     <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="126.0" prefWidth="264.0" style="-fx-background-color: #313338;" text="Datos por filtro:" textFill="#8f99a4" wrapText="true">
-                        <font>
-                           <Font name="Arial Rounded MT Bold" size="35.0" />
-                        </font>
-                        <HBox.margin>
-                           <Insets bottom="15.0" left="60.0" right="30.0" />
-                        </HBox.margin>
-                     </Label>
-                     <VBox alignment="CENTER" prefHeight="159.0" prefWidth="336.0">
-                        <children>
-                           <HBox alignment="CENTER_LEFT" prefHeight="37.0" prefWidth="100.0">
-                              <children>
-                                 <Label fx:id="textFinalResult" text="Fecha: " textAlignment="CENTER" textFill="#cfd0d1">
-                                    <HBox.margin>
-                                       <Insets right="10.0" />
-                                    </HBox.margin>
-                                    <font>
-                                       <Font size="16.0" />
-                                    </font>
-                                 </Label>
-                                 <Label fx:id="textFinalResultDate" text="sin filtro" textAlignment="CENTER" textFill="WHITE">
-                                    <font>
-                                       <Font size="16.0" />
-                                    </font>
-                                 </Label>
-                              </children>
-                           </HBox>
-                           <HBox alignment="CENTER_LEFT" prefHeight="37.0" prefWidth="100.0">
-                              <children>
-                                 <Label fx:id="textFinalResult2" text="Hora:" textAlignment="CENTER" textFill="#cfd0d1">
-                                    <HBox.margin>
-                                       <Insets right="10.0" />
-                                    </HBox.margin>
-                                    <font>
-                                       <Font size="16.0" />
-                                    </font>
-                                 </Label>
-                                 <Label fx:id="textFinalResultTime" text="sin filtro" textAlignment="CENTER" textFill="WHITE">
-                                    <font>
-                                       <Font size="16.0" />
-                                    </font>
-                                 </Label>
-                              </children>
-                              <VBox.margin>
-                                 <Insets />
-                              </VBox.margin>
-                           </HBox>
-                           <HBox alignment="CENTER_LEFT" prefHeight="37.0" prefWidth="159.0">
-                              <children>
-                                 <Label fx:id="textFinalResult1" text="Total usuarios:" textAlignment="CENTER" textFill="#cfd0d1">
-                                    <HBox.margin>
-                                       <Insets right="10.0" />
-                                    </HBox.margin>
-                                    <font>
-                                       <Font size="16.0" />
-                                    </font>
-                                 </Label>
-                                 <Label fx:id="textFinalResultTotalBets" prefHeight="25.0" prefWidth="67.0" text="sin datos" textAlignment="CENTER" textFill="WHITE">
-                                    <font>
-                                       <Font size="16.0" />
-                                    </font>
-                                 </Label>
-                              </children>
-                           </HBox>
-                           <HBox alignment="CENTER_LEFT" prefHeight="37.0" prefWidth="100.0">
-                              <children>
-                                 <Label fx:id="textFinalResult21" text="\% fiabilidad:" textAlignment="CENTER" textFill="#cfd0d1">
-                                    <HBox.margin>
-                                       <Insets right="10.0" />
-                                    </HBox.margin>
-                                    <font>
-                                       <Font size="16.0" />
-                                    </font>
-                                 </Label>
-                                 <Label fx:id="textFinalResultPercentSuccess" text="sin datos" textAlignment="CENTER" textFill="WHITE">
-                                    <font>
-                                       <Font size="16.0" />
-                                    </font>
-                                 </Label>
-                              </children>
-                           </HBox>
-                        </children>
-                        <HBox.margin>
-                           <Insets right="8.0" />
-                        </HBox.margin>
-                     </VBox>
-                  </children>
-               </HBox>
-            </children>
-         </VBox>
-			<Separator orientation="VERTICAL" />
-			<VBox>
+			<VBox prefHeight="898.0" prefWidth="817.0">
 				<children>
 					<VBox alignment="CENTER" style="-fx-background-color: #313338;">
 						<children>
-							<HBox alignment="CENTER_RIGHT">
+							<HBox alignment="CENTER">
 								<children>
 									<Button fx:id="buttonMainMiniView" mnemonicParsing="false" prefHeight="26.0" prefWidth="41.0" text="✂">
 										<font>
@@ -178,24 +64,27 @@
 										<padding>
 											<Insets bottom="6.0" left="20.0" right="20.0" top="5.0" />
 										</padding>
+                              <HBox.margin>
+                                 <Insets />
+                              </HBox.margin>
 									</Label>
 									<Button fx:id="buttonClearFilters" mnemonicParsing="false" prefHeight="26.0" prefWidth="41.0" text="🌀">
 										<font>
 											<Font name="Segoe UI Emoji" size="14.0" />
 										</font>
 										<HBox.margin>
-											<Insets right="200.0" />
+											<Insets />
 										</HBox.margin>
 									</Button>
 								</children>
 							</HBox>
-							<GridPane>
+							<GridPane prefHeight="188.0" prefWidth="817.0">
 								<columnConstraints>
 									<ColumnConstraints hgrow="SOMETIMES" maxWidth="163.0" minWidth="10.0" prefWidth="61.33332951863606" />
-									<ColumnConstraints hgrow="SOMETIMES" maxWidth="234.0" minWidth="10.0" prefWidth="161.33333333333334" />
-									<ColumnConstraints hgrow="SOMETIMES" maxWidth="234.0" minWidth="0.0" prefWidth="28.0" />
-									<ColumnConstraints hgrow="SOMETIMES" maxWidth="258.0" minWidth="10.0" prefWidth="73.0" />
-									<ColumnConstraints hgrow="SOMETIMES" maxWidth="357.0" minWidth="10.0" prefWidth="321.0" />
+									<ColumnConstraints hgrow="SOMETIMES" maxWidth="234.0" minWidth="10.0" prefWidth="156.33333333333334" />
+									<ColumnConstraints hgrow="SOMETIMES" maxWidth="234.0" minWidth="0.0" prefWidth="60.333333333333314" />
+									<ColumnConstraints hgrow="SOMETIMES" maxWidth="258.0" minWidth="10.0" prefWidth="67.66666666666669" />
+									<ColumnConstraints hgrow="SOMETIMES" maxWidth="394.3333333333333" minWidth="10.0" prefWidth="394.3333333333333" />
 								</columnConstraints>
 								<rowConstraints>
 									<RowConstraints maxHeight="85.33334477742513" minHeight="10.0" prefHeight="47.0" vgrow="SOMETIMES" />
@@ -226,7 +115,7 @@
 													<Insets right="20.0" />
 												</padding>
 											</RadioButton>
-											<CheckBox fx:id="starCheckBox" mnemonicParsing="false" prefHeight="17.0" text="Visualizar ⭐" textFill="WHITE">
+											<CheckBox fx:id="starCheckBox" mnemonicParsing="false" prefHeight="17.0" text="Visualizar ⭐" textFill="WHITE" visible="false">
 												<font>
 													<Font name="Segoe UI Emoji" size="12.0" />
 												</font>
@@ -333,19 +222,29 @@
 							</GridPane>
 						</children>
 					</VBox>
-					<TableView fx:id="tableUsers" prefHeight="503.0" style="-fx-background-color: #1e1f22;">
+					<TableView fx:id="tableUsers" prefHeight="588.0" prefWidth="817.0" style="-fx-background-color: #1e1f22;">
 						<columns>
-							<TableColumn fx:id="columnUsername" editable="false" maxWidth="1.7976931348623157E308" prefWidth="392.0" resizable="false" style="-fx-font-weight: bold;" text="Usuario" />
-							<TableColumn fx:id="columnSuccess" editable="false" minWidth="0.0" prefWidth="123.0" resizable="false" sortType="DESCENDING" text="\% Fiabilidad" />
-							<TableColumn fx:id="columnTotalBets" editable="false" minWidth="0.0" prefWidth="124.0" resizable="false" text="Total Apuestas" />
+							<TableColumn fx:id="columnUsername" editable="false" maxWidth="1.7976931348623157E308" prefWidth="355.00000953674316" resizable="false" style="-fx-font-weight: bold;" text="Usuario" />
+							<TableColumn fx:id="columnSuccess" editable="false" minWidth="0.0" prefWidth="189.33334350585938" resizable="false" sortType="DESCENDING" text="\% Fiabilidad" />
+							<TableColumn fx:id="columnTotalBets" editable="false" minWidth="0.0" prefWidth="209.33331298828125" resizable="false" text="Total Apuestas" />
 						</columns>
 					</TableView>
+               <VBox alignment="CENTER" maxHeight="0.0" minHeight="0.0" prefHeight="0.0" prefWidth="817.0" style="-fx-background-color: #313338;" visible="false">
+                  <children>
+                     <Text fx:id="noDataMessagePieChart" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="No hay datos destacables">
+                        <font>
+                           <Font size="16.0" />
+                        </font>
+                     </Text>
+            			<PieChart fx:id="pieChart" title="Titulo de prueba" />
+                  </children>
+               </VBox>
 				</children>
 			</VBox>
 			<Separator orientation="VERTICAL" prefHeight="669.0" prefWidth="6.0" />
-			<VBox>
+			<VBox prefHeight="792.0" prefWidth="558.0">
 				<children>
-					<VBox alignment="TOP_CENTER" style="-fx-background-color: #313338;">
+					<VBox alignment="TOP_CENTER" prefHeight="487.0" prefWidth="558.0" style="-fx-background-color: #313338;">
 						<children>
 							<VBox alignment="CENTER">
 								<children>
@@ -357,24 +256,24 @@
 											<Insets top="40.0" />
 										</padding>
 									</Label>
-									<Separator>
+									<Separator prefHeight="53.0" prefWidth="558.0">
 										<padding>
 											<Insets bottom="10.0" left="90.0" right="90.0" />
 										</padding>
 									</Separator>
 								</children>
 							</VBox>
-							<GridPane>
+							<GridPane prefHeight="339.0" prefWidth="509.0">
 								<columnConstraints>
 									<ColumnConstraints hgrow="SOMETIMES" maxWidth="182.0" minWidth="10.0" prefWidth="142.6666259765625" />
 									<ColumnConstraints hgrow="SOMETIMES" maxWidth="308.0" minWidth="10.0" prefWidth="196.66670735677087" />
 								</columnConstraints>
 								<rowConstraints>
 									<RowConstraints />
-									<RowConstraints maxHeight="115.3333231608073" minHeight="10.0" prefHeight="64.0" vgrow="SOMETIMES" />
-									<RowConstraints maxHeight="107.3333231608073" minHeight="10.0" prefHeight="53.0" vgrow="SOMETIMES" />
-									<RowConstraints maxHeight="114.99996439615884" minHeight="10.0" prefHeight="64.0" vgrow="SOMETIMES" />
-									<RowConstraints maxHeight="140.00001017252606" minHeight="10.0" prefHeight="76.0" vgrow="SOMETIMES" />
+									<RowConstraints maxHeight="153.9999821980794" minHeight="10.0" prefHeight="81.3333511352539" vgrow="SOMETIMES" />
+									<RowConstraints maxHeight="120.99998219807944" minHeight="0.0" prefHeight="71.33334859212238" vgrow="SOMETIMES" />
+									<RowConstraints maxHeight="175.99998474121094" minHeight="0.0" prefHeight="71.99995422363281" vgrow="SOMETIMES" />
+									<RowConstraints maxHeight="140.00001017252606" minHeight="0.0" prefHeight="107.00004577636719" vgrow="SOMETIMES" />
 								</rowConstraints>
 								<children>
 									<Label text="Nombre de usuario:" textFill="#cfd0d1" GridPane.rowIndex="1">
@@ -398,8 +297,8 @@
 											<Font size="14.0" />
 										</font>
 									</Label>-->
-									<DatePicker fx:id="datePicker" prefHeight="25.0" prefWidth="151.0" style="-fx-control-inner-background: #1e1f22; -fx-background-color: #1e1f22;" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-									<ComboBox fx:id="comboTime" prefHeight="25.0" prefWidth="149.0" style="-fx-background-color: #1e1f22; -fx-control-inner-background: #1e1f22;" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+									<DatePicker fx:id="datePicker" prefHeight="29.0" prefWidth="149.0" style="-fx-control-inner-background: #1e1f22; -fx-background-color: #1e1f22;" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+									<ComboBox fx:id="comboTime" prefHeight="29.0" prefWidth="149.0" style="-fx-background-color: #1e1f22; -fx-control-inner-background: #1e1f22;" GridPane.columnIndex="1" GridPane.rowIndex="2" />
 									<!--<HBox alignment="CENTER_LEFT" GridPane.columnIndex="1" GridPane.rowIndex="4">
 										<children>
 											<RadioButton fx:id="radioButtonGood" mnemonicParsing="false" text="✅ Mayor x5" textFill="#ceffbb" />
@@ -414,7 +313,7 @@
 										<children>
 											<VBox alignment="CENTER_LEFT">
 												<children>
-													<TextField fx:id="textFieldUser" maxHeight="29.0" maxWidth="160.0" prefHeight="29.0" prefWidth="146.0" style="-fx-background-color: #1e1f22; -fx-text-fill: #ffffff;">
+													<TextField fx:id="textFieldUser" prefHeight="29.0" prefWidth="146.0" style="-fx-background-color: #1e1f22; -fx-text-fill: #ffffff;">
 														<font>
 															<Font size="14.0" />
 														</font>
@@ -431,31 +330,101 @@
 											</Button>
 										</children>
 									</HBox>
+      							<Button fx:id="buttonCreateUser" contentDisplay="CENTER" mnemonicParsing="false" prefHeight="28.0" prefWidth="90.0" style="-fx-background-color: #248046;" text="Confirmar" textFill="#fffbf8" GridPane.columnIndex="1" GridPane.rowIndex="4" />
 								</children>
 								<VBox.margin>
 									<Insets bottom="20.0" left="49.0" />
 								</VBox.margin>
 							</GridPane>
-							<Button fx:id="buttonCreateUser" contentDisplay="CENTER" mnemonicParsing="false" prefHeight="28.0" prefWidth="90.0" style="-fx-background-color: #248046;" text="Confirmar" textFill="#fffbf8" />
-							<Label>
-								<font>
-									<Font name="System Bold" size="13.0" />
-								</font>
-							</Label>
+                     <HBox alignment="CENTER_LEFT" prefHeight="2.0" prefWidth="558.0">
+                        <children>
+                           <Label fx:id="textFinalResult1" text="Total usuarios:" textAlignment="CENTER" textFill="#cfd0d1" visible="false">
+                              <HBox.margin>
+                                 <Insets right="10.0" />
+                              </HBox.margin>
+                              <font>
+                                 <Font size="16.0" />
+                              </font>
+                           </Label>
+                           <Label fx:id="textFinalResultTotalBets" prefHeight="25.0" prefWidth="67.0" text="sin datos" textAlignment="CENTER" textFill="WHITE" visible="false">
+                              <font>
+                                 <Font size="16.0" />
+                              </font>
+                           </Label>
+                        </children>
+                     </HBox>
+                     <HBox alignment="CENTER_LEFT" prefHeight="6.0" prefWidth="558.0" visible="false">
+                        <children>
+                           <Label fx:id="textFinalResult21" text="\% fiabilidad:" textAlignment="CENTER" textFill="#cfd0d1">
+                              <HBox.margin>
+                                 <Insets right="10.0" />
+                              </HBox.margin>
+                              <font>
+                                 <Font size="16.0" />
+                              </font>
+                           </Label>
+                           <Label fx:id="textFinalResultPercentSuccess" text="sin datos" textAlignment="CENTER" textFill="WHITE">
+                              <font>
+                                 <Font size="16.0" />
+                              </font>
+                           </Label>
+                        </children>
+                     </HBox>
 						</children>
 					</VBox>
 					<Separator />
-					<VBox alignment="TOP_CENTER" style="-fx-background-color: #1e1f22;">
+					<VBox alignment="TOP_CENTER" prefHeight="354.0" prefWidth="558.0" style="-fx-background-color: #313338;">
 						<children>
-							<Label alignment="TOP_CENTER" prefHeight="51.0" text="Ranking global" textAlignment="CENTER" textFill="#8f99a4">
-								<font>
-									<Font name="Arial Rounded MT Bold" size="30.0" />
-								</font>
-								<VBox.margin>
-									<Insets top="15.0" />
-								</VBox.margin>
-							</Label>
-							<TableView fx:id="tableUsersRanking" prefHeight="175.0" style="-fx-background-color: #1e1f22;">
+                     <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="237.0" prefWidth="536.0" style="-fx-background-color: #313338;" text="Datos por filtro:" textFill="#8f99a4" wrapText="true">
+                        <font>
+                           <Font name="Arial Rounded MT Bold" size="35.0" />
+                        </font>
+                     </Label>
+                     <VBox alignment="CENTER" prefHeight="186.0" prefWidth="558.0" spacing="8.0">
+                        <children>
+                           <HBox alignment="CENTER" prefHeight="63.0" prefWidth="558.0">
+                              <children>
+                                 <Label fx:id="textFinalResult" text="Fecha: " textAlignment="CENTER" textFill="#cfd0d1">
+                                    <HBox.margin>
+                                       <Insets right="10.0" />
+                                    </HBox.margin>
+                                    <font>
+                                       <Font size="16.0" />
+                                    </font>
+                                 </Label>
+                                 <Label fx:id="textFinalResultDate" text="sin filtro" textAlignment="CENTER" textFill="WHITE">
+                                    <font>
+                                       <Font size="16.0" />
+                                    </font>
+                                 </Label>
+                              </children>
+                           </HBox>
+                           <HBox alignment="CENTER" prefHeight="37.0" prefWidth="100.0">
+                              <children>
+                                 <Label fx:id="textFinalResult2" text="Hora:" textAlignment="CENTER" textFill="#cfd0d1">
+                                    <HBox.margin>
+                                       <Insets right="10.0" />
+                                    </HBox.margin>
+                                       <font>
+                                       <Font size="16.0" />
+                                    </font>
+                                 </Label>
+                                 <Label fx:id="textFinalResultTime" text="sin filtro" textAlignment="CENTER" textFill="WHITE">
+                                    <font>
+                                       <Font size="16.0" />
+                                    </font>
+                                 </Label>
+                              </children>
+                              <VBox.margin>
+                                 <Insets />
+                              </VBox.margin>
+                           </HBox>
+                        </children>
+                        <opaqueInsets>
+                           <Insets />
+                        </opaqueInsets>
+                     </VBox>
+							<TableView fx:id="tableUsersRanking" prefHeight="30.0" prefWidth="558.0" style="-fx-background-color: #1e1f22;" visible="false">
 								<columns>
 									<TableColumn fx:id="columnUsernameRanking" editable="false" prefWidth="187.0" sortable="false" text="Usuario" />
 									<TableColumn fx:id="columnSuccessRanking" editable="false" minWidth="0.0" prefWidth="79.0" sortType="DESCENDING" sortable="false" text="\% Fiabilidad" />
@@ -465,6 +434,11 @@
                            <Insets left="30.0" right="30.0" />
                         </padding>
 							</TableView>
+                     <Label fx:id="labelTitle1" alignment="CENTER" contentDisplay="CENTER" maxHeight="14.0" maxWidth="38.0" prefHeight="14.0" prefWidth="38.0" style="-fx-background-color: #1e1f22;" text="Mejores usuarios" textFill="#8f99a4" textOverrun="CLIP" visible="false">
+                        <font>
+                           <Font name="Arial Rounded MT Bold" size="45.0" />
+                        </font>
+                     </Label>
 						</children>
 					</VBox>
 				</children>

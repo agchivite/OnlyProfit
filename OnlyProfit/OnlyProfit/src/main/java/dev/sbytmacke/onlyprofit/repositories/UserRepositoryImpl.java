@@ -101,7 +101,8 @@ public class UserRepositoryImpl implements UserRepository<UserEntity, String> {
         List<UserEntity> uniqueUsersList = new ArrayList<>(userMap.values());
 
         UserMapper userMapper = new UserMapper();
-        return userMapper.convertUserEntitiesToDTOs(uniqueUsersList);
+
+        return userMapper.convertUserEntitiesToDTOs(uniqueUsersList, getAllEntity());
     }
 
     @Override
@@ -132,7 +133,7 @@ public class UserRepositoryImpl implements UserRepository<UserEntity, String> {
         databaseManager.closeDatabase();
 
         UserMapper userMapper = new UserMapper();
-        return userMapper.convertUserEntitiesToDTOs(new ArrayList<>(userMap.values()));
+        return userMapper.convertUserEntitiesToDTOs(new ArrayList<>(userMap.values()), getAllEntity());
     }
 
     @Override
@@ -166,7 +167,7 @@ public class UserRepositoryImpl implements UserRepository<UserEntity, String> {
         databaseManager.closeDatabase();
 
         UserMapper userMapper = new UserMapper();
-        return userMapper.convertUserEntitiesToDTOs(new ArrayList<>(userMap.values()));
+        return userMapper.convertUserEntitiesToDTOs(new ArrayList<>(userMap.values()), getAllEntity());
     }
 
     @Override
@@ -201,10 +202,9 @@ public class UserRepositoryImpl implements UserRepository<UserEntity, String> {
         databaseManager.closeDatabase();
 
         UserMapper userMapper = new UserMapper();
-        return userMapper.convertUserEntitiesToDTOs(new ArrayList<>(userMap.values()));
+        return userMapper.convertUserEntitiesToDTOs(new ArrayList<>(userMap.values()), getAllEntity());
     }
 
-    // //==== DATA GESTOR VIEW ====
     @Override
     public List<UserEntity> getAllEntity() {
         logger.info("Finding all users entity");
@@ -313,7 +313,6 @@ public class UserRepositoryImpl implements UserRepository<UserEntity, String> {
         return usersFiltered;
     }
 
-    //=============================
     @Override
     public Integer getGlobalTotalBetsByTime(String newTime) {
         logger.info("getGlobalTotalBetsByTime");

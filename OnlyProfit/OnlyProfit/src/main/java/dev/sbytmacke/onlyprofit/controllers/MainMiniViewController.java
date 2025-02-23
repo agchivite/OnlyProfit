@@ -3,6 +3,7 @@ package dev.sbytmacke.onlyprofit.controllers;
 import dev.sbytmacke.onlyprofit.constants.PathConstants;
 import dev.sbytmacke.onlyprofit.dto.UserDTO;
 import dev.sbytmacke.onlyprofit.routes.RoutesManager;
+import dev.sbytmacke.onlyprofit.utils.GlobalStats;
 import dev.sbytmacke.onlyprofit.utils.TimeUtils;
 import dev.sbytmacke.onlyprofit.viewmodel.UserViewModel;
 import javafx.collections.FXCollections;
@@ -118,18 +119,18 @@ public class MainMiniViewController {
                 if (item == null) {
                     setStyle("");
                 } else {
-                    if (item.getPercentReliable() <= userViewModel.badAverageAllUsersSuccessRate) {
+                    if (item.getPercentReliable() <= GlobalStats.badAverageAllUsersSuccessRate) {
                         setStyle("-fx-background-color: #ff6161;");
-                    } else if (item.getPercentReliable() > userViewModel.badAverageAllUsersSuccessRate && item.getPercentReliable() <= userViewModel.goodAverageAllUsersSuccessRate) {
+                    } else if (item.getPercentReliable() > GlobalStats.badAverageAllUsersSuccessRate && item.getPercentReliable() <= GlobalStats.goodAverageAllUsersSuccessRate) {
                         setStyle("-fx-background-color: orange;");
-                    } else if (item.getPercentReliable() > userViewModel.goodAverageAllUsersSuccessRate) {
+                    } else if (item.getPercentReliable() > GlobalStats.goodAverageAllUsersSuccessRate) {
                         setStyle("-fx-background-color: #53db78;");
                     } else {
                         setStyle("-fx-background-color: #ffffff;");
                     }
 
                     // Filtro especial para los verdes que fallen la media
-                    if (item.getPercentReliable() > userViewModel.goodAverageAllUsersSuccessRate && item.getTotalBets() < userViewModel.medianTotalBets) {
+                    if (item.getPercentReliable() > GlobalStats.goodAverageAllUsersSuccessRate && item.getTotalBets() < GlobalStats.medianTotalBets) {
                         setStyle("-fx-background-color: orange;");
                     }
                 }
@@ -201,7 +202,7 @@ public class MainMiniViewController {
 
             copyListFromMainView.addAll(tableUsersMainView.getItems());
             // Eliminamos los rojos
-            copyListFromMainView.removeIf(user -> user.getPercentReliable() <= userViewModel.badAverageAllUsersSuccessRate);
+            copyListFromMainView.removeIf(user -> user.getPercentReliable() <= GlobalStats.badAverageAllUsersSuccessRate);
             userData.addAll(copyListFromMainView);
         }
 
@@ -246,7 +247,7 @@ public class MainMiniViewController {
             List<UserDTO> usersToShow = userViewModel.getAllByDateTime(newTime, newDate);
 
             // Eliminamos los rojos
-            usersToShow.removeIf(user -> user.getPercentReliable() <= userViewModel.badAverageAllUsersSuccessRate);
+            usersToShow.removeIf(user -> user.getPercentReliable() <= GlobalStats.badAverageAllUsersSuccessRate);
 
             tableUsers.getItems().clear();
             tableUsers.setItems(FXCollections.observableArrayList(usersToShow));
@@ -260,7 +261,7 @@ public class MainMiniViewController {
             List<UserDTO> usersToShow = userViewModel.getAllByTime(newTime);
 
             // Eliminamos los rojos
-            usersToShow.removeIf(user -> user.getPercentReliable() <= userViewModel.badAverageAllUsersSuccessRate);
+            usersToShow.removeIf(user -> user.getPercentReliable() <= GlobalStats.badAverageAllUsersSuccessRate);
 
             tableUsers.getItems().clear();
             tableUsers.setItems(FXCollections.observableArrayList(usersToShow));
@@ -275,7 +276,7 @@ public class MainMiniViewController {
 
 
             // Eliminamos los rojos
-            usersToShow.removeIf(user -> user.getPercentReliable() <= userViewModel.badAverageAllUsersSuccessRate);
+            usersToShow.removeIf(user -> user.getPercentReliable() <= GlobalStats.badAverageAllUsersSuccessRate);
 
             tableUsers.getItems().clear();
             tableUsers.setItems(FXCollections.observableArrayList(usersToShow));

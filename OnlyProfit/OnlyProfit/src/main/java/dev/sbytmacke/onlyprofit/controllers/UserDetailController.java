@@ -3,7 +3,9 @@ package dev.sbytmacke.onlyprofit.controllers;
 import dev.sbytmacke.onlyprofit.dto.UserDTO;
 import dev.sbytmacke.onlyprofit.models.UserEntity;
 import dev.sbytmacke.onlyprofit.utils.DayHourComparator;
+import dev.sbytmacke.onlyprofit.utils.GlobalStats;
 import dev.sbytmacke.onlyprofit.viewmodel.UserViewModel;
+import dev.sbytmacke.onlyprofit.utils.Statistics;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
@@ -12,8 +14,7 @@ import javafx.stage.Stage;
 
 import java.time.DayOfWeek;
 import java.util.*;
-
-import static dev.sbytmacke.onlyprofit.viewmodel.UserViewModel.USER_FILTER_RELABLE;
+import java.util.stream.Collectors;
 
 public class UserDetailController {
 
@@ -43,25 +44,6 @@ public class UserDetailController {
         return mapSuccessRateByDay;
     }
 
-    private static List<String> getSpanishDayOfWeekFromEnglish(List<Integer> bestDayNumber) {
-        List<String> bestDays = new ArrayList<>();
-        for (Integer dayNumber : bestDayNumber) {
-            String dayNameWithMaxSuccess = DayOfWeek.of(dayNumber).toString();
-            String dayOfWeek = switch (dayNameWithMaxSuccess) {
-                case "MONDAY" -> "LUNES";
-                case "TUESDAY" -> "MARTES";
-                case "WEDNESDAY" -> "MIÉRCOLES";
-                case "THURSDAY" -> "JUEVES";
-                case "FRIDAY" -> "VIERNES";
-                case "SATURDAY" -> "SÁBADO";
-                case "SUNDAY" -> "DOMINGO";
-                default -> "ERROR";
-            };
-            bestDays.add(dayOfWeek);
-        }
-        return bestDays;
-    }
-
     private Map<String, List<Double>> getMapSuccessByHour(List<UserEntity> bets) {
         Map<String, List<Double>> mapSuccessRateByHour = new HashMap<>();
 
@@ -86,11 +68,84 @@ public class UserDetailController {
         usernameLabel.setText(user.getUsername());
 
         List<UserEntity> listAllBetsOnlyByOneUser = userViewModel.getAllBetsByUser(user.getUsername());
-        int totalBets = listAllBetsOnlyByOneUser.size();
+        setBest(listAllBetsOnlyByOneUser);
 
+        // ======= CAMBIAR
+        /*int totalBets = listAllBetsOnlyByOneUser.size();
         setBestDay(listAllBetsOnlyByOneUser, totalBets);
         setBestHour(listAllBetsOnlyByOneUser, totalBets);
-        setBestDayHour(listAllBetsOnlyByOneUser, totalBets);
+        setBestDayHour(listAllBetsOnlyByOneUser, totalBets);*/
+        // =======
+    }
+
+    public Map<String, Integer> calculateMedianUserEachDayTime(List<UserEntity> listAllBetsOnlyByOneUser) {
+        Map<String, List<Integer>> userBets = new HashMap<>();
+
+        // Agrupar TODAS las apuestas de del usuario sin importar la franja horaria
+        for (UserEntity user : listAllBetsOnlyByOneUser) {
+            String username = user.getUsername();
+            userBets.putIfAbsent(username, new ArrayList<>());
+            userBets.get(username).add(user.getTimesBet());
+        }
+
+        // Calcular la mediana de apuestas de cada usuario
+        Map<String, Integer> userMedians = new HashMap<>();
+        for (Map.Entry<String, List<Integer>> entry : userBets.entrySet()) {
+            String username = entry.getKey();
+
+            //Integer median = calculateMedian(entry.getValue());
+            Integer average = Statistics.calculateAverage(entry.getValue());
+
+            userMedians.put(username, average);
+
+            // Log para depuración
+            //System.out.println("MEDIANA de " + username + " -> " + median);
+            System.out.println("[UserDetailController] MEDIA de " + username + " -> " + average);
+        }
+
+        return userMedians;
+    }
+
+    public void setBest(List<UserEntity> allBetsOneUser) {
+        Map<String, Integer> userMedians = calculateMedianUserEachDayTime(allBetsOneUser);
+
+        // Buscar todas las apuestas de mi usuario, coger el primero de useerMedians
+        String userToSend = userMedians.keySet().iterator().next();
+        Integer userMedian = userMedians.get(userToSend);
+
+        List<UserEntity> filteredUserEntities = allBetsOneUser.stream()
+                .filter(user -> user.getUsername().equals(userToSend))
+                .collect(Collectors.toList());
+
+        // Con filteredUserEntities tengo todas las apuestas de mi usuario y ahora buscamos donde haya mñas apuestas
+
+        String bestDayHour = "";
+        Integer bestTimesBet = userMedian;
+        for (UserEntity filteredUserEntity : filteredUserEntities)  {
+            if (filteredUserEntity.getTimesBet() > bestTimesBet) {
+                bestTimesBet = filteredUserEntity.getTimesBet();
+                bestDayHour = filteredUserEntity.getDateBet().getDayOfWeek() + " " + filteredUserEntity.getTimeBet();
+            }
+        }
+
+        // Ahora comprobamos si tiene otros dias iguales
+        List<String> bestDays = new ArrayList<>();
+        for (UserEntity filteredUserEntity : filteredUserEntities)  {
+            if (filteredUserEntity.getTimesBet() == bestTimesBet) {
+                bestDays.add(filteredUserEntity.getDateBet().getDayOfWeek() + " " + filteredUserEntity.getTimeBet());
+            }
+        }
+
+        Label correspondenceLabel = new Label("Mejor Día y Hora:");
+        Insets labelMargins = new Insets(0, 0, 0, 15);
+        correspondenceLabel.setPadding(labelMargins);
+        gridPane.add(correspondenceLabel, 0, rowIndex);
+
+        for (String hourDay : bestDays) {
+            Label hourDayLabel = new Label(hourDay);
+            gridPane.add(hourDayLabel, 1, rowIndex);
+            rowIndex++;
+        }
     }
 
     private void setBestDayHour(List<UserEntity> listAllBetsOnlyByOneUser, int totalBets) {
@@ -104,24 +159,104 @@ public class UserDetailController {
         correspondenceLabel.setPadding(labelMargins);
         gridPane.add(correspondenceLabel, 0, rowIndex);
 
-        if (bestHourDays.isEmpty()) {
-            Label noDataLabel = new Label("No tiene...");
-            gridPane.add(noDataLabel, 1, rowIndex);
-            rowIndex++;
-            return;
-        }
-
         for (String hourDay : bestHourDays) {
             Label hourDayLabel = new Label(hourDay);
             Double percent = Double.valueOf(hourDay.split(" %")[0].trim());
-            if (percent >= USER_FILTER_RELABLE) {
+            if (percent >= GlobalStats.goodAverageAllUsersSuccessRate) {
                 hourDayLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #79ba0f");
-            } else if (percent < USER_FILTER_RELABLE) {
+            } else if (percent < GlobalStats.averageSuccessRate) {
                 hourDayLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #e3b007");
             }
             gridPane.add(hourDayLabel, 1, rowIndex);
             rowIndex++;
         }
+    }
+
+    private void setBestHour(List<UserEntity> listAllBetsOnlyByOneUser, int totalBets) {
+        int uniqueHoursWithBets = countUniqueHoursWithBets(listAllBetsOnlyByOneUser);
+        int averageBetsPerHourByOneUser = uniqueHoursWithBets > 0 ? Math.round((float) totalBets / uniqueHoursWithBets) : 0;
+        List<String> bestHours = getBestHour(listAllBetsOnlyByOneUser, averageBetsPerHourByOneUser);
+
+        Label correspondenceLabel = new Label("Mejor/es Hora/s:");
+        Insets labelMargins = new Insets(0, 0, 0, 15);
+        correspondenceLabel.setPadding(labelMargins);
+        gridPane.add(correspondenceLabel, 0, rowIndex);
+
+        if (bestHours.isEmpty()) {
+            Label noDataLabel = new Label("No tiene...");
+            gridPane.add(noDataLabel, 1, rowIndex);
+            rowIndex++;
+
+            // Fila extra
+            Label emptyLabel = new Label("");
+            gridPane.add(emptyLabel, 0, rowIndex++);
+
+            return;
+        }
+
+        // Etiquetas de hora en la misma columna y última fila
+        for (String hour : bestHours) {
+            Label hourLabel = new Label(hour);
+            Double percent = Double.valueOf(hour.split(" %")[0].trim());
+            if (percent >= GlobalStats.goodAverageAllUsersSuccessRate) {
+                hourLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #79ba0f");
+            } else if (percent < GlobalStats.averageSuccessRate) {
+                hourLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #e3b007");
+            }
+            gridPane.add(hourLabel, 1, rowIndex);
+            rowIndex++;
+        }
+
+        // Fila extra
+        Label emptyLabel = new Label("");
+        gridPane.add(emptyLabel, 0, rowIndex++);
+
+        //bestHour.setText(String.join("\n", bestHourNumber));
+    }
+
+    private void setBestDay(List<UserEntity> listAllBetsOnlyByOneUser, int totalBets) {
+        int uniqueDaysWithBets = countUniqueDaysOfWeekWithBets(listAllBetsOnlyByOneUser);
+        int averageBetsPerDayByOneUser = uniqueDaysWithBets > 0 ? Math.round((float) totalBets / uniqueDaysWithBets) : 0;
+        List<String> bestDays = getBestDay(listAllBetsOnlyByOneUser, averageBetsPerDayByOneUser);
+
+        Label correspondenceLabel = new Label("Mejor/es Día/s:");
+        Insets labelMargins = new Insets(0, 0, 0, 15);
+        correspondenceLabel.setPadding(labelMargins);
+        gridPane.add(correspondenceLabel, 0, 0);
+
+        if (bestDays.isEmpty()) {
+            Label noDataLabel = new Label("No tiene...");
+            gridPane.add(noDataLabel, 1, rowIndex);
+            rowIndex++;
+
+            // Fila extra
+            Label emptyLabel = new Label("");
+            gridPane.add(emptyLabel, 0, rowIndex++);
+
+            return;
+        }
+
+
+        // Agregar las etiquetas al GridPane
+        for (String day : bestDays) {
+            Label dayLabel = new Label(day);
+
+            Double percent = Double.valueOf(day.split(" %")[0].trim());
+            if (percent >= GlobalStats.goodAverageAllUsersSuccessRate) {
+                dayLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #79ba0f");
+            } else if (percent < GlobalStats.averageSuccessRate) {
+                dayLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #e3b007");
+            }
+
+            gridPane.add(dayLabel, 1, rowIndex);
+            rowIndex++;
+        }
+
+        // Fila extra
+        Label emptyLabel = new Label("");
+        gridPane.add(emptyLabel, 0, rowIndex++);
+
+        //bestDay.setText(String.join("\n", bestDays));
     }
 
     private List<String> getBestDayHour(List<UserEntity> listAllBetsOnlyByOneUser, int averageBetsByOneUser) {
@@ -135,16 +270,16 @@ public class UserDetailController {
             double successRate = successAndBets.get(0) / successAndBets.get(1) * 100;
             double betsOnDayHour = successAndBets.get(1);
 
-            System.out.println("dayOfWeekAndHour: " + dayOfWeekAndHour + ", successRate: " + successRate + ", betsOnDay: " + betsOnDayHour + ", averageBetsByOneUser: " + averageBetsByOneUser + ", averageAllUsersSuccessRate: " + userViewModel.goodAverageAllUsersSuccessRate);
-            if (betsOnDayHour >= averageBetsByOneUser && betsOnDayHour >= userViewModel.medianTotalBets && successRate >= userViewModel.goodAverageAllUsersSuccessRate) {
+            System.out.println("dayOfWeekAndHour: " + dayOfWeekAndHour + ", successRate: " + successRate + ", betsOnDay: " + betsOnDayHour + ", averageBetsByOneUser: " + averageBetsByOneUser + ", averageAllUsersSuccessRate: " + GlobalStats.goodAverageAllUsersSuccessRate);
+            if (betsOnDayHour >= averageBetsByOneUser && betsOnDayHour >= GlobalStats.medianTotalBets && successRate >= GlobalStats.goodAverageAllUsersSuccessRate) {
                 successRate = Math.round(successRate * 100.0) / 100.0;
                 String percentAndDayOfWeekAndHour = successRate + " % - " + dayOfWeekAndHour;
                 filteredDaysByAverageBetsPerDayHour.add(percentAndDayOfWeekAndHour);
             }
         }
 
-        System.out.println("Media de apuestas por usuario: " + averageBetsByOneUser + ", mediana de aciertos de todos los usuarios: " + userViewModel.goodAverageAllUsersSuccessRate);
-        System.out.println("Mediana general de total apuestas: " + userViewModel.medianTotalBets);
+        System.out.println("Media de apuestas por usuario: " + averageBetsByOneUser + ", mediana de aciertos de todos los usuarios: " + GlobalStats.goodAverageAllUsersSuccessRate);
+        System.out.println("Mediana general de total apuestas: " + GlobalStats.medianTotalBets);
 
         // TODO: pensar un mejor filtro cuando no haya ninguno, por ahora lo dejo con que el algoritmo considerar que ningun dato tiene valor para ser el mejor
         // Si no hay ninguno, escogemos los que tengan más aciertos, siempre que sea valioso comparando con el resto de usuarios
@@ -205,92 +340,6 @@ public class UserDetailController {
         return uniqueHours.size();
     }
 
-    private void setBestHour(List<UserEntity> listAllBetsOnlyByOneUser, int totalBets) {
-        int uniqueHoursWithBets = countUniqueHoursWithBets(listAllBetsOnlyByOneUser);
-        int averageBetsPerHourByOneUser = uniqueHoursWithBets > 0 ? Math.round((float) totalBets / uniqueHoursWithBets) : 0;
-        List<String> bestHours = getBestHour(listAllBetsOnlyByOneUser, averageBetsPerHourByOneUser);
-
-        Label correspondenceLabel = new Label("Mejor/es Hora/s:");
-        Insets labelMargins = new Insets(0, 0, 0, 15);
-        correspondenceLabel.setPadding(labelMargins);
-        gridPane.add(correspondenceLabel, 0, rowIndex);
-
-        if (bestHours.isEmpty()) {
-            Label noDataLabel = new Label("No tiene...");
-            gridPane.add(noDataLabel, 1, rowIndex);
-            rowIndex++;
-
-            // Fila extra
-            Label emptyLabel = new Label("");
-            gridPane.add(emptyLabel, 0, rowIndex++);
-
-            return;
-        }
-
-        // Etiquetas de hora en la misma columna y última fila
-        for (String hour : bestHours) {
-            Label hourLabel = new Label(hour);
-            Double percent = Double.valueOf(hour.split(" %")[0].trim());
-            if (percent >= USER_FILTER_RELABLE) {
-                hourLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #79ba0f");
-            } else if (percent < USER_FILTER_RELABLE) {
-                hourLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #e3b007");
-            }
-            gridPane.add(hourLabel, 1, rowIndex);
-            rowIndex++;
-        }
-
-        // Fila extra
-        Label emptyLabel = new Label("");
-        gridPane.add(emptyLabel, 0, rowIndex++);
-
-        //bestHour.setText(String.join("\n", bestHourNumber));
-    }
-
-    private void setBestDay(List<UserEntity> listAllBetsOnlyByOneUser, int totalBets) {
-        int uniqueDaysWithBets = countUniqueDaysOfWeekWithBets(listAllBetsOnlyByOneUser);
-        int averageBetsPerDayByOneUser = uniqueDaysWithBets > 0 ? Math.round((float) totalBets / uniqueDaysWithBets) : 0;
-        List<String> bestDays = getBestDay(listAllBetsOnlyByOneUser, averageBetsPerDayByOneUser);
-
-        Label correspondenceLabel = new Label("Mejor/es Día/s:");
-        Insets labelMargins = new Insets(0, 0, 0, 15);
-        correspondenceLabel.setPadding(labelMargins);
-        gridPane.add(correspondenceLabel, 0, 0);
-
-        if (bestDays.isEmpty()) {
-            Label noDataLabel = new Label("No tiene...");
-            gridPane.add(noDataLabel, 1, rowIndex);
-            rowIndex++;
-
-            // Fila extra
-            Label emptyLabel = new Label("");
-            gridPane.add(emptyLabel, 0, rowIndex++);
-
-            return;
-        }
-
-
-        // Agregar las etiquetas al GridPane
-        for (String day : bestDays) {
-            Label dayLabel = new Label(day);
-
-            Double percent = Double.valueOf(day.split(" %")[0].trim());
-            if (percent >= USER_FILTER_RELABLE) {
-                dayLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #79ba0f");
-            } else if (percent < USER_FILTER_RELABLE) {
-                dayLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #e3b007");
-            }
-
-            gridPane.add(dayLabel, 1, rowIndex);
-            rowIndex++;
-        }
-
-        // Fila extra
-        Label emptyLabel = new Label("");
-        gridPane.add(emptyLabel, 0, rowIndex++);
-
-        //bestDay.setText(String.join("\n", bestDays));
-    }
 
     private List<String> getBestDay(List<UserEntity> bets, int averageBetsPerDayByOneUser) {
         Map<Integer, List<Double>> mapSuccessRateByDay = getMapSuccessByDay(bets);
@@ -314,14 +363,14 @@ public class UserDetailController {
                 default -> "ERROR";
             };
 
-            System.out.println("dayOfWeekNumber: " + betDayOfWeekSpanish + ", successRate: " + successRate + ", betsOnDay: " + betsOnDay + ", averageBetsByOneUser: " + averageBetsPerDayByOneUser + ", averageAllUsersSuccessRate: " + userViewModel.goodAverageAllUsersSuccessRate);
-            if (betsOnDay >= averageBetsPerDayByOneUser && betsOnDay >= userViewModel.medianTotalBets && successRate >= userViewModel.goodAverageAllUsersSuccessRate) {
+            System.out.println("dayOfWeekNumber: " + betDayOfWeekSpanish + ", successRate: " + successRate + ", betsOnDay: " + betsOnDay + ", averageBetsByOneUser: " + averageBetsPerDayByOneUser + ", averageAllUsersSuccessRate: " + GlobalStats.goodAverageAllUsersSuccessRate);
+            if (betsOnDay >= averageBetsPerDayByOneUser && betsOnDay >= GlobalStats.medianTotalBets && successRate >= GlobalStats.goodAverageAllUsersSuccessRate) {
                 successRate = Math.round(successRate * 100.0) / 100.0;
                 String percentAndDayOfWeek = successRate + " % - " + betDayOfWeekSpanish;
                 filteredDaysByAverageBetsPerDay.add(percentAndDayOfWeek);
             }
-            System.out.println("Media de apuestas por usuario: " + averageBetsPerDayByOneUser + ", mediana de aciertos de todos los usuarios: " + userViewModel.goodAverageAllUsersSuccessRate);
-            System.out.println("Mediana succesRate: " + userViewModel.medianTotalBets);
+            System.out.println("Media de apuestas por usuario: " + averageBetsPerDayByOneUser + ", mediana de aciertos de todos los usuarios: " + GlobalStats.goodAverageAllUsersSuccessRate);
+            System.out.println("Mediana succesRate: " + GlobalStats.medianTotalBets);
         }
 
         // TODO: pensar un mejor filtro cuando no haya ninguno, por ahora lo dejo con que el algoritmo considerar que ningun dato tiene valor para ser el mejor
@@ -363,7 +412,7 @@ public class UserDetailController {
             double successRate = successAndBets.get(0) / successAndBets.get(1) * 100;
             double betsOnHour = successAndBets.get(1);
 
-            if (betsOnHour >= averageBetsPerHourByOneUser && betsOnHour >= userViewModel.medianTotalBets && successRate >= userViewModel.goodAverageAllUsersSuccessRate) {
+            if (betsOnHour >= averageBetsPerHourByOneUser && betsOnHour >= GlobalStats.medianTotalBets && successRate >= GlobalStats.goodAverageAllUsersSuccessRate) {
                 successRate = Math.round(successRate * 100.0) / 100.0;
                 String percentHour = successRate + " % - " + hourEntry;
                 filteredHours.add(percentHour);
