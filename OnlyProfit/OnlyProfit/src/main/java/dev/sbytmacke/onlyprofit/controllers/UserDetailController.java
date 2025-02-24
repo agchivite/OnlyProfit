@@ -170,20 +170,31 @@ public class UserDetailController {
             betsByDay.put(day, betsByDay.getOrDefault(day, 0) + bet.getTimesBet());
         }
 
-        DayOfWeek bestDay = Collections.max(betsByDay.entrySet(), Map.Entry.comparingByValue()).getKey();
+        // Obtener el máximo número de apuestas
+        int maxBets = Collections.max(betsByDay.values());
+
+        // Obtener todos los días que tienen ese número máximo de apuestas
+        List<DayOfWeek> bestDays = betsByDay.entrySet()
+                .stream()
+                .filter(entry -> entry.getValue() == maxBets)
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
 
         Label bestDayLabel = new Label("Mejor Día:");
         Insets labelMarginsDay = new Insets(0, 0, 0, 15);
         bestDayLabel.setPadding(labelMarginsDay);
         gridPane.add(bestDayLabel, 0, rowIndex);
-        Label bestDayLabel2 = new Label(bestDay.toString());
-        gridPane.add(bestDayLabel2, 1, rowIndex);
-        rowIndex++;
+
+        for (DayOfWeek day : bestDays) {
+            Label dayLabel = new Label(day.toString());
+            gridPane.add(dayLabel, 1, rowIndex);
+            rowIndex++;
+        }
 
         // Añadir un label vacío para separación
         Label emptyLabel = new Label();
-        emptyLabel.setMinHeight(20); // Ajusta este valor según la separación que desees
-        gridPane.add(emptyLabel, 0, rowIndex, 2, 1); // Span de 2 columnas
+        emptyLabel.setMinHeight(20);
+        gridPane.add(emptyLabel, 0, rowIndex, 2, 1);
         rowIndex++;
     }
 
@@ -195,20 +206,31 @@ public class UserDetailController {
             betsByHour.put(hour, betsByHour.getOrDefault(hour, 0) + bet.getTimesBet());
         }
 
-        String bestHour = Collections.max(betsByHour.entrySet(), Map.Entry.comparingByValue()).getKey();
+        // Obtener el máximo número de apuestas
+        int maxBets = Collections.max(betsByHour.values());
+
+        // Obtener todas las horas que tienen ese número máximo de apuestas
+        List<String> bestHours = betsByHour.entrySet()
+                .stream()
+                .filter(entry -> entry.getValue() == maxBets)
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
 
         Label bestHourLabel = new Label("Mejor Hora:");
         Insets labelMarginsHour = new Insets(0, 0, 0, 15);
         bestHourLabel.setPadding(labelMarginsHour);
         gridPane.add(bestHourLabel, 0, rowIndex);
-        Label bestHourLabel2 = new Label(bestHour);
-        gridPane.add(bestHourLabel2, 1, rowIndex);
-        rowIndex++;
+
+        for (String hour : bestHours) {
+            Label hourLabel = new Label(hour);
+            gridPane.add(hourLabel, 1, rowIndex);
+            rowIndex++;
+        }
 
         // Añadir un label vacío para separación
         Label emptyLabel = new Label();
-        emptyLabel.setMinHeight(20); // Ajusta este valor según la separación que desees
-        gridPane.add(emptyLabel, 0, rowIndex, 2, 1); // Span de 2 columnas
+        emptyLabel.setMinHeight(20);
+        gridPane.add(emptyLabel, 0, rowIndex, 2, 1);
         rowIndex++;
     }
 

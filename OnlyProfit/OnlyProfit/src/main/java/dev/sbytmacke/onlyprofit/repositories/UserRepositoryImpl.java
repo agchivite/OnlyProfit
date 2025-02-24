@@ -102,7 +102,7 @@ public class UserRepositoryImpl implements UserRepository<UserEntity, String> {
 
         UserMapper userMapper = new UserMapper();
 
-        return userMapper.convertUserEntitiesToDTOs(uniqueUsersList, getAllEntity());
+        return userMapper.convertUserEntitiesToDTOs(uniqueUsersList, getAllEntity(), UserMapper.ModeEnum.DAYHOUR);
     }
 
     @Override
@@ -133,7 +133,7 @@ public class UserRepositoryImpl implements UserRepository<UserEntity, String> {
         databaseManager.closeDatabase();
 
         UserMapper userMapper = new UserMapper();
-        return userMapper.convertUserEntitiesToDTOs(new ArrayList<>(userMap.values()), getAllEntity());
+        return userMapper.convertUserEntitiesToDTOs(new ArrayList<>(userMap.values()), getAllEntity(), UserMapper.ModeEnum.HOUR);
     }
 
     @Override
@@ -167,7 +167,7 @@ public class UserRepositoryImpl implements UserRepository<UserEntity, String> {
         databaseManager.closeDatabase();
 
         UserMapper userMapper = new UserMapper();
-        return userMapper.convertUserEntitiesToDTOs(new ArrayList<>(userMap.values()), getAllEntity());
+        return userMapper.convertUserEntitiesToDTOs(new ArrayList<>(userMap.values()), getAllEntity(), UserMapper.ModeEnum.DAY);
     }
 
     @Override
@@ -202,7 +202,7 @@ public class UserRepositoryImpl implements UserRepository<UserEntity, String> {
         databaseManager.closeDatabase();
 
         UserMapper userMapper = new UserMapper();
-        return userMapper.convertUserEntitiesToDTOs(new ArrayList<>(userMap.values()), getAllEntity());
+        return userMapper.convertUserEntitiesToDTOs(new ArrayList<>(userMap.values()), getAllEntity(), UserMapper.ModeEnum.DAYHOUR);
     }
 
     @Override

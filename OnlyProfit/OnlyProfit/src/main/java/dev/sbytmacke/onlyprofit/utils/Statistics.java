@@ -5,6 +5,9 @@ import java.util.List;
 
 public class Statistics {
     public static Integer calculateMedian(List<Integer> bets) {
+        if (bets.isEmpty()) {
+            return 0;
+        }
         Collections.sort(bets);
         int size = bets.size();
         if (size % 2 == 0) {
@@ -15,6 +18,9 @@ public class Statistics {
     }
 
     public static int calculateAverage(List<Integer> numbers) {
+        if (numbers.isEmpty()) {
+            return 0;
+        }
         double sum = numbers.stream().mapToInt(Integer::intValue).sum();
         double average = sum / numbers.size();
         return (int) Math.round(average);

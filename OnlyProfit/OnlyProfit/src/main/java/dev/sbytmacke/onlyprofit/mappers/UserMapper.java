@@ -10,7 +10,7 @@ import java.util.*;
 
 public class UserMapper {
 
-    public Map<String, Integer> calculateUserAverages(List<UserEntity> allUsersEntity) {
+    public Map<String, Integer> calculateUserAveragesByDayHour(List<UserEntity> allUsersEntity) {
         Map<String, List<Integer>> userBets = new HashMap<>();
 
         // Agrupar TODAS las apuestas de cada usuario sin importar la franja horaria
@@ -24,7 +24,6 @@ public class UserMapper {
         Map<String, Integer> userMedians = new HashMap<>();
         for (Map.Entry<String, List<Integer>> entry : userBets.entrySet()) {
             String username = entry.getKey();
-            System.out.println("ENTRY " + entry.getValue());
 
             //Integer median = Statistics.calculateMedian(entry.getValue());
             Integer average = Statistics.calculateAverage(entry.getValue());
@@ -33,18 +32,107 @@ public class UserMapper {
 
             // Log para depuración
             //System.out.println("MEDIANA de " + username + " -> " + median);
-            System.out.println("MEDIA de " + username + " -> " + average);
+            System.out.println("[MODE DAYHOUR] MEDIA de " + username + " -> " + average);
         }
 
         return userMedians;
     }
 
-    public List<UserDTO> convertUserEntitiesToDTOs(List<UserEntity> userEntities, List<UserEntity> allUsersEntity) {
+    public Map<String, Integer> calculateUserAveragesByDay(List<UserEntity> allUsersEntity) {
+        Map<String, List<Integer>> userBetsByDay = new HashMap<>();
+
+        for (UserEntity user : allUsersEntity) {
+            String key = user.getUsername() + "-" + user.getDateBet().getDayOfWeek(); // Clave: usuario + día de la semana
+
+            userBetsByDay.putIfAbsent(key, new ArrayList<>());
+            userBetsByDay.get(key).add(user.getTimesBet());
+        }
+
+        // Calcular la media de apuestas de cada usuario
+        Map<String, Integer> userMedians = new HashMap<>();
+        for (Map.Entry<String, List<Integer>> entry : userBetsByDay.entrySet()) {
+            String key = entry.getKey(); // Ejemplo: "Alice-MONDAY"
+
+            // Extraer solo el nombre de usuario (sin el día de la semana)
+            String username = key.split("-")[0];
+
+            Integer average = Statistics.calculateAverage(entry.getValue());
+
+            // Guardar solo el nombre de usuario como clave
+            userMedians.put(username, average);
+            System.out.println("[MODE DAY] MEDIA de " + username + " -> " + average);
+        }
+
+        return userMedians;
+    }
+
+    public Map<String, Integer> calculateUserAveragesByHour(List<UserEntity> allUsersEntity) {
+        Map<String, List<Integer>> userBetsByHour = new HashMap<>();
+
+        // Agrupar todas las apuestas de cada usuario por franja horaria
+        for (UserEntity user : allUsersEntity) {
+            String key = user.getUsername() + "-" + user.getTimeBet(); // Ejemplo: "VV-01:01-02:00"
+
+            userBetsByHour.putIfAbsent(key, new ArrayList<>());
+            userBetsByHour.get(key).add(user.getTimesBet());
+        }
+
+        // Sumar todas las apuestas por franja horaria
+        Map<String, Integer> totalBetsByHour = new HashMap<>();
+        for (Map.Entry<String, List<Integer>> entry : userBetsByHour.entrySet()) {
+            int sum = entry.getValue().stream().mapToInt(Integer::intValue).sum();
+            totalBetsByHour.put(entry.getKey(), sum);
+        }
+
+        // Imprimir apuestas totales por franja horaria
+        for (Map.Entry<String, Integer> entry : totalBetsByHour.entrySet()) {
+            System.out.println("Apuestas de " + entry.getKey() + ": " + entry.getValue());
+        }
+
+        // Agrupar las sumas de apuestas por usuario (ignorando la franja horaria)
+        Map<String, List<Integer>> userBetsTotal = new HashMap<>();
+        for (Map.Entry<String, Integer> entry : totalBetsByHour.entrySet()) {
+            String username = entry.getKey().split("-")[0]; // Obtener solo el nombre de usuario
+
+            userBetsTotal.putIfAbsent(username, new ArrayList<>());
+            userBetsTotal.get(username).add(entry.getValue());
+        }
+
+        // Calcular la media de apuestas por usuario
+        Map<String, Integer> userAverages = new HashMap<>();
+        for (Map.Entry<String, List<Integer>> entry : userBetsTotal.entrySet()) {
+            String username = entry.getKey();
+            int average = Statistics.calculateAverage(entry.getValue()); // Calcula la media
+            userAverages.put(username, average);
+            System.out.println("[MODE HOUR] MEDIA de " + username + " -> " + average);
+        }
+
+        return userAverages;
+    }
+
+    public enum ModeEnum {
+        DAY,
+        HOUR,
+        DAYHOUR
+    }
+
+    public List<UserDTO> convertUserEntitiesToDTOs(List<UserEntity> userEntities, List<UserEntity> allUsersEntity, ModeEnum mode) {
         if (userEntities.isEmpty()) {
             return Collections.emptyList();
         }
 
-        Map<String, Integer> userAverage = calculateUserAverages(allUsersEntity);
+        Map<String, Integer> userAverage = new HashMap<String, Integer>();
+
+        if (mode == ModeEnum.DAY) {
+            userAverage = calculateUserAveragesByDay(allUsersEntity);
+        }
+        if (mode == ModeEnum.HOUR) {
+            userAverage = calculateUserAveragesByHour(allUsersEntity);
+        }
+        if (mode == ModeEnum.DAYHOUR) {
+            userAverage = calculateUserAveragesByDayHour(allUsersEntity);
+        }
+
         List<UserDTO> userDTOs = new ArrayList<>();
         List<Double> allBets = new ArrayList<>();
         List<Double> allSuccessRates = new ArrayList<>();
@@ -65,7 +153,7 @@ public class UserMapper {
                 allSuccessRates.add(percentReliable);
 
                 // Log de depuración
-                System.out.println("Usuario: " + username + ", Apuestas: " + userBets + ", Mediana: " + averageBets + ", PercentReliable: " + percentReliable);
+                System.out.println("Usuario: " + username + ", Apuestas: " + userBets + ", Media: " + averageBets + ", PercentReliable: " + percentReliable);
             }
         }
 

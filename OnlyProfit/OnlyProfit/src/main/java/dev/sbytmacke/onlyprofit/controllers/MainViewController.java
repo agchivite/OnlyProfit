@@ -643,12 +643,12 @@ public class MainViewController {
                 } else {
                     if (item.getTotalBets() < item.getAverageBets()) {
                         setStyle("-fx-background-color: #ff6161;");
-                    } else if (item.getTotalBets() / 2  > item.getAverageBets()) {
+                    } else if (item.getTotalBets() / 2  >= item.getAverageBets()) {
                         setStyle("-fx-background-color: #53db78;");
                     }else if (item.getTotalBets() >= item.getAverageBets()) {
                         setStyle("-fx-background-color: orange;");
                     } else {
-                        setStyle("-fx-background-color: #ffffff;");
+                        setStyle("-fx-background-color: #ff6161;");
                     }
 
                     // Filtro especial para los verdes que fallen la media
@@ -934,11 +934,11 @@ public class MainViewController {
         }
 
         if (radioButtonHideGreen.isSelected()) {
-            usersToShow.removeIf(user -> user.getTotalBets() / 2  > user.getAverageBets());
+            usersToShow.removeIf(user -> user.getTotalBets() / 2  >= user.getAverageBets());
         }
 
         if (radioButtonHideOrange.isSelected()) {
-            usersToShow.removeIf(user ->  user.getTotalBets() >= user.getAverageBets() && user.getTotalBets() / 2  <= user.getAverageBets() );
+            usersToShow.removeIf(user ->  user.getTotalBets() >= user.getAverageBets() && user.getTotalBets() / 2  < user.getAverageBets() );
         }
     }
 
