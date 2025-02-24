@@ -109,7 +109,7 @@ public class UserDetailController {
     public void setBest(List<UserEntity> allBetsOneUser) {
         Map<String, Integer> userMedians = calculateMedianUserEachDayTime(allBetsOneUser);
 
-        // Buscar todas las apuestas de mi usuario, coger el primero de useerMedians
+        // Buscar todas las apuestas de mi usuario, coger el primero de userMedians
         String userToSend = userMedians.keySet().iterator().next();
         Integer userMedian = userMedians.get(userToSend);
 
@@ -117,8 +117,17 @@ public class UserDetailController {
                 .filter(user -> user.getUsername().equals(userToSend))
                 .collect(Collectors.toList());
 
-        // Con filteredUserEntities tengo todas las apuestas de mi usuario y ahora buscamos donde haya mñas apuestas
+        // Calcular mejor día y hora
+        setBestDayAndHour(filteredUserEntities, userMedian);
 
+        // Calcular mejor día
+        setBestDay(filteredUserEntities);
+
+        // Calcular mejor hora
+        setBestHour(filteredUserEntities);
+    }
+
+    private void setBestDayAndHour(List<UserEntity> filteredUserEntities, Integer userMedian) {
         String bestDayHour = "";
         Integer bestTimesBet = userMedian;
         for (UserEntity filteredUserEntity : filteredUserEntities)  {
@@ -128,7 +137,6 @@ public class UserDetailController {
             }
         }
 
-        // Ahora comprobamos si tiene otros dias iguales
         List<String> bestDays = new ArrayList<>();
         for (UserEntity filteredUserEntity : filteredUserEntities)  {
             if (filteredUserEntity.getTimesBet() == bestTimesBet) {
@@ -146,8 +154,102 @@ public class UserDetailController {
             gridPane.add(hourDayLabel, 1, rowIndex);
             rowIndex++;
         }
+
+        // Añadir un label vacío para separación
+        Label emptyLabel = new Label();
+        emptyLabel.setMinHeight(20); // Ajusta este valor según la separación que desees
+        gridPane.add(emptyLabel, 0, rowIndex, 2, 1); // Span de 2 columnas
+        rowIndex++;
     }
 
+    private void setBestDay(List<UserEntity> filteredUserEntities) {
+        Map<DayOfWeek, Integer> betsByDay = new EnumMap<>(DayOfWeek.class);
+
+        for (UserEntity bet : filteredUserEntities) {
+            DayOfWeek day = bet.getDateBet().getDayOfWeek();
+            betsByDay.put(day, betsByDay.getOrDefault(day, 0) + bet.getTimesBet());
+        }
+
+        DayOfWeek bestDay = Collections.max(betsByDay.entrySet(), Map.Entry.comparingByValue()).getKey();
+
+        Label bestDayLabel = new Label("Mejor Día:");
+        Insets labelMarginsDay = new Insets(0, 0, 0, 15);
+        bestDayLabel.setPadding(labelMarginsDay);
+        gridPane.add(bestDayLabel, 0, rowIndex);
+        Label bestDayLabel2 = new Label(bestDay.toString());
+        gridPane.add(bestDayLabel2, 1, rowIndex);
+        rowIndex++;
+
+        // Añadir un label vacío para separación
+        Label emptyLabel = new Label();
+        emptyLabel.setMinHeight(20); // Ajusta este valor según la separación que desees
+        gridPane.add(emptyLabel, 0, rowIndex, 2, 1); // Span de 2 columnas
+        rowIndex++;
+    }
+
+    private void setBestHour(List<UserEntity> filteredUserEntities) {
+        Map<String, Integer> betsByHour = new HashMap<>();
+
+        for (UserEntity bet : filteredUserEntities) {
+            String hour = bet.getTimeBet();
+            betsByHour.put(hour, betsByHour.getOrDefault(hour, 0) + bet.getTimesBet());
+        }
+
+        String bestHour = Collections.max(betsByHour.entrySet(), Map.Entry.comparingByValue()).getKey();
+
+        Label bestHourLabel = new Label("Mejor Hora:");
+        Insets labelMarginsHour = new Insets(0, 0, 0, 15);
+        bestHourLabel.setPadding(labelMarginsHour);
+        gridPane.add(bestHourLabel, 0, rowIndex);
+        Label bestHourLabel2 = new Label(bestHour);
+        gridPane.add(bestHourLabel2, 1, rowIndex);
+        rowIndex++;
+
+        // Añadir un label vacío para separación
+        Label emptyLabel = new Label();
+        emptyLabel.setMinHeight(20); // Ajusta este valor según la separación que desees
+        gridPane.add(emptyLabel, 0, rowIndex, 2, 1); // Span de 2 columnas
+        rowIndex++;
+    }
+
+    private Map<String, List<Double>> getMapSuccessByDayHour(List<UserEntity> listAllBetsOnlyByOneUser) {
+        Map<String, List<Double>> mapSuccessRateByDayHour = new HashMap<>();
+
+        for (UserEntity bet : listAllBetsOnlyByOneUser) {
+            String betHour = bet.getTimeBet();
+            DayOfWeek betDay = bet.getDateBet().getDayOfWeek();
+
+            String betDayOfWeekSpanish = switch (betDay.toString()) {
+                case "MONDAY" -> "LUNES";
+                case "TUESDAY" -> "MARTES";
+                case "WEDNESDAY" -> "MIÉRCOLES";
+                case "THURSDAY" -> "JUEVES";
+                case "FRIDAY" -> "VIERNES";
+                case "SATURDAY" -> "SÁBADO";
+                case "SUNDAY" -> "DOMINGO";
+                default -> "ERROR";
+            };
+            String betHourAndDay = betDayOfWeekSpanish + " de " + betHour;
+
+            // Contar aciertos y apuestas por hora, el índice 0 es aciertos y el 1 es el total de apuestas
+            mapSuccessRateByDayHour.putIfAbsent(betHourAndDay, new ArrayList<>(Arrays.asList(0.0, 0.0)));
+            double successRate = Boolean.TRUE.equals(bet.getReliable()) ? 1.0 : 0.0;
+            List<Double> successAndBets = mapSuccessRateByDayHour.get(betHourAndDay);
+            successAndBets.set(0, successAndBets.get(0) + successRate);
+            successAndBets.set(1, successAndBets.get(1) + 1);
+            mapSuccessRateByDayHour.put(betHourAndDay, successAndBets);
+        }
+
+        return mapSuccessRateByDayHour;
+    }
+
+    @FXML
+    private void closeWindow() {
+        Stage stage = (Stage) usernameLabel.getScene().getWindow();
+        stage.close();
+    }
+
+    /*
     private void setBestDayHour(List<UserEntity> listAllBetsOnlyByOneUser, int totalBets) {
         int uniqueHoursDayWithBets = countUniqueHoursDayWithBets(listAllBetsOnlyByOneUser);
         int averageBetsByOneUser = uniqueHoursDayWithBets > 0 ? Math.round((float) totalBets / uniqueHoursDayWithBets) : 0;
@@ -236,8 +338,6 @@ public class UserDetailController {
             return;
         }
 
-
-        // Agregar las etiquetas al GridPane
         for (String day : bestDays) {
             Label dayLabel = new Label(day);
 
@@ -258,6 +358,7 @@ public class UserDetailController {
 
         //bestDay.setText(String.join("\n", bestDays));
     }
+    */
 
     private List<String> getBestDayHour(List<UserEntity> listAllBetsOnlyByOneUser, int averageBetsByOneUser) {
         Map<String, List<Double>> mapSuccessRateByDayHour = getMapSuccessByDayHour(listAllBetsOnlyByOneUser);
@@ -298,37 +399,6 @@ public class UserDetailController {
         return filteredDaysByAverageBetsPerDayHour;
     }
 
-    private Map<String, List<Double>> getMapSuccessByDayHour(List<UserEntity> listAllBetsOnlyByOneUser) {
-        Map<String, List<Double>> mapSuccessRateByDayHour = new HashMap<>();
-
-        for (UserEntity bet : listAllBetsOnlyByOneUser) {
-            String betHour = bet.getTimeBet();
-            DayOfWeek betDay = bet.getDateBet().getDayOfWeek();
-
-            String betDayOfWeekSpanish = switch (betDay.toString()) {
-                case "MONDAY" -> "LUNES";
-                case "TUESDAY" -> "MARTES";
-                case "WEDNESDAY" -> "MIÉRCOLES";
-                case "THURSDAY" -> "JUEVES";
-                case "FRIDAY" -> "VIERNES";
-                case "SATURDAY" -> "SÁBADO";
-                case "SUNDAY" -> "DOMINGO";
-                default -> "ERROR";
-            };
-            String betHourAndDay = betDayOfWeekSpanish + " de " + betHour;
-
-            // Contar aciertos y apuestas por hora, el índice 0 es aciertos y el 1 es el total de apuestas
-            mapSuccessRateByDayHour.putIfAbsent(betHourAndDay, new ArrayList<>(Arrays.asList(0.0, 0.0)));
-            double successRate = Boolean.TRUE.equals(bet.getReliable()) ? 1.0 : 0.0;
-            List<Double> successAndBets = mapSuccessRateByDayHour.get(betHourAndDay);
-            successAndBets.set(0, successAndBets.get(0) + successRate);
-            successAndBets.set(1, successAndBets.get(1) + 1);
-            mapSuccessRateByDayHour.put(betHourAndDay, successAndBets);
-        }
-
-        return mapSuccessRateByDayHour;
-    }
-
     private int countUniqueHoursDayWithBets(List<UserEntity> listAllBetsOnlyByOneUser) {
         Set<String> uniqueHours = new HashSet<>();
 
@@ -339,7 +409,6 @@ public class UserDetailController {
 
         return uniqueHours.size();
     }
-
 
     private List<String> getBestDay(List<UserEntity> bets, int averageBetsPerDayByOneUser) {
         Map<Integer, List<Double>> mapSuccessRateByDay = getMapSuccessByDay(bets);
@@ -444,11 +513,5 @@ public class UserDetailController {
         }
 
         return uniqueHours.size();
-    }
-
-    @FXML
-    private void closeWindow() {
-        Stage stage = (Stage) usernameLabel.getScene().getWindow();
-        stage.close();
     }
 }

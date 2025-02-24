@@ -10,7 +10,7 @@ import java.util.*;
 
 public class UserMapper {
 
-    public Map<String, Integer> calculateUserMedians(List<UserEntity> allUsersEntity) {
+    public Map<String, Integer> calculateUserAverages(List<UserEntity> allUsersEntity) {
         Map<String, List<Integer>> userBets = new HashMap<>();
 
         // Agrupar TODAS las apuestas de cada usuario sin importar la franja horaria
@@ -44,7 +44,7 @@ public class UserMapper {
             return Collections.emptyList();
         }
 
-        Map<String, Integer> userMedians = calculateUserMedians(allUsersEntity);
+        Map<String, Integer> userAverage = calculateUserAverages(allUsersEntity);
         List<UserDTO> userDTOs = new ArrayList<>();
         List<Double> allBets = new ArrayList<>();
         List<Double> allSuccessRates = new ArrayList<>();
@@ -52,12 +52,12 @@ public class UserMapper {
         for (UserEntity user : userEntities) {
             String username = user.getUsername();
             int userBets = user.getTimesBet();
-            Integer medianBets = userMedians.get(username);
+            Integer averageBets = userAverage.get(username);
 
-            if (medianBets != null && medianBets > 0) {
-                double percentReliable = ((double) userBets / medianBets) * 100.0;
+            if (averageBets != null && averageBets > 0) {
+                double percentReliable = ((double) userBets / averageBets) * 100.0;
 
-                UserDTO userDTO = new UserDTO(username, percentReliable, userBets, medianBets);
+                UserDTO userDTO = new UserDTO(username, percentReliable, userBets, averageBets);
                 userDTOs.add(userDTO);
 
                 // Guardamos valores para calcular la mediana total
@@ -65,7 +65,7 @@ public class UserMapper {
                 allSuccessRates.add(percentReliable);
 
                 // Log de depuración
-                System.out.println("Usuario: " + username + ", Apuestas: " + userBets + ", Mediana: " + medianBets + ", PercentReliable: " + percentReliable);
+                System.out.println("Usuario: " + username + ", Apuestas: " + userBets + ", Mediana: " + averageBets + ", PercentReliable: " + percentReliable);
             }
         }
 

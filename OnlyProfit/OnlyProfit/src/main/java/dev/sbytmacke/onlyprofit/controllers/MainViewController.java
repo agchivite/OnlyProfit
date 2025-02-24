@@ -641,20 +641,20 @@ public class MainViewController {
                 if (item == null) {
                     setStyle("");
                 } else {
-                    if (item.getPercentReliable() <= GlobalStats.badAverageAllUsersSuccessRate) {
+                    if (item.getTotalBets() < item.getAverageBets()) {
                         setStyle("-fx-background-color: #ff6161;");
-                    } else if (item.getPercentReliable() > GlobalStats.badAverageAllUsersSuccessRate && item.getPercentReliable() <= GlobalStats.goodAverageAllUsersSuccessRate) {
-                        setStyle("-fx-background-color: orange;");
-                    } else if (item.getPercentReliable() > GlobalStats.goodAverageAllUsersSuccessRate) {
+                    } else if (item.getTotalBets() / 2  > item.getAverageBets()) {
                         setStyle("-fx-background-color: #53db78;");
+                    }else if (item.getTotalBets() >= item.getAverageBets()) {
+                        setStyle("-fx-background-color: orange;");
                     } else {
                         setStyle("-fx-background-color: #ffffff;");
                     }
 
                     // Filtro especial para los verdes que fallen la media
-                    if (item.getPercentReliable() > GlobalStats.goodAverageAllUsersSuccessRate && item.getTotalBets() < GlobalStats.medianTotalBets) {
+                    /*if (item.getPercentReliable() > GlobalStats.goodAverageAllUsersSuccessRate && item.getTotalBets() < GlobalStats.medianTotalBets) {
                         setStyle("-fx-background-color: orange;");
-                    }
+                    }*/
                 }
             }
         });
@@ -929,17 +929,16 @@ public class MainViewController {
     }
 
     private void extractedUserByRadioButtonFilter(List<UserDTO> usersToShow) {
+        if (radioButtonHideRed.isSelected()) {
+            usersToShow.removeIf(user -> user.getTotalBets() < user.getAverageBets());
+        }
+
         if (radioButtonHideGreen.isSelected()) {
-            usersToShow.removeIf(user -> user.getPercentReliable() >= GlobalStats.goodAverageAllUsersSuccessRate && user.getTotalBets() >= GlobalStats.medianTotalBets);
+            usersToShow.removeIf(user -> user.getTotalBets() / 2  > user.getAverageBets());
         }
 
         if (radioButtonHideOrange.isSelected()) {
-            usersToShow.removeIf(user -> user.getPercentReliable() > GlobalStats.badAverageAllUsersSuccessRate && user.getPercentReliable() <= GlobalStats.goodAverageAllUsersSuccessRate);
-            usersToShow.removeIf(user -> user.getTotalBets() < GlobalStats.medianTotalBets);
-        }
-
-        if (radioButtonHideRed.isSelected()) {
-            usersToShow.removeIf(user -> user.getPercentReliable() <= GlobalStats.badAverageAllUsersSuccessRate);
+            usersToShow.removeIf(user ->  user.getTotalBets() >= user.getAverageBets() && user.getTotalBets() / 2  <= user.getAverageBets() );
         }
     }
 
@@ -1147,8 +1146,8 @@ public class MainViewController {
         // Clean fields
         datePicker.setValue(null);
         comboTime.setValue(null);
-        radioButtonGood.setSelected(false);
-        radioButtonBad.setSelected(false);
+        //radioButtonGood.setSelected(false);
+        //radioButtonBad.setSelected(false);
 
         userViewModel.refreshData(userViewModel.getAll());
         updateMainTable();
