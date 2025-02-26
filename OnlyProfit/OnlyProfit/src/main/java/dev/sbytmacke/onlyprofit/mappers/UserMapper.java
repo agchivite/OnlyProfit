@@ -48,7 +48,38 @@ public class UserMapper {
             userBetsByDay.get(key).add(user.getTimesBet());
         }
 
-        // Calcular la media de apuestas de cada usuario
+        // Sumar todas las apuestas por franja horaria
+        Map<String, Integer> totalBetsByDay = new HashMap<>();
+        for (Map.Entry<String, List<Integer>> entry : userBetsByDay.entrySet()) {
+            int sum = entry.getValue().stream().mapToInt(Integer::intValue).sum();
+            totalBetsByDay.put(entry.getKey(), sum);
+        }
+
+
+        // Imprimir apuestas totales por franja horaria
+        for (Map.Entry<String, Integer> entry : totalBetsByDay.entrySet()) {
+            System.out.println("Apuestas de " + entry.getKey() + ": " + entry.getValue());
+        }
+
+        // Agrupar las sumas de apuestas por usuario (ignorando la franja horaria)
+        Map<String, List<Integer>> userBetsTotal = new HashMap<>();
+        for (Map.Entry<String, Integer> entry : totalBetsByDay.entrySet()) {
+            String username = entry.getKey().split("-")[0]; // Obtener solo el nombre de usuario
+
+            userBetsTotal.putIfAbsent(username, new ArrayList<>());
+            userBetsTotal.get(username).add(entry.getValue());
+        }
+
+        // Calcular la media de apuestas por usuario
+        Map<String, Integer> userAverages = new HashMap<>();
+        for (Map.Entry<String, List<Integer>> entry : userBetsTotal.entrySet()) {
+            String username = entry.getKey();
+            int average = Statistics.calculateAverage(entry.getValue()); // Calcula la media
+            userAverages.put(username, average);
+            System.out.println("[MODE DAY] MEDIA de " + username + " -> " + average);
+        }
+
+        /*// Calcular la media de apuestas de cada usuario
         Map<String, Integer> userMedians = new HashMap<>();
         for (Map.Entry<String, List<Integer>> entry : userBetsByDay.entrySet()) {
             String key = entry.getKey(); // Ejemplo: "Alice-MONDAY"
@@ -61,9 +92,19 @@ public class UserMapper {
             // Guardar solo el nombre de usuario como clave
             userMedians.put(username, average);
             System.out.println("[MODE DAY] MEDIA de " + username + " -> " + average);
-        }
+        }*/
 
-        return userMedians;
+                /*
+        [MODE DAY] MEDIA de VV -> 4
+        [MODE DAY] MEDIA de VV -> 1
+        [MODE DAY] MEDIA de VV -> 1
+        [MODE DAY] MEDIA de VV -> 2
+        [MODE DAY] MEDIA de VV -> 1
+        [MODE DAY] MEDIA de VV -> 5
+        Usuario: VV, Apuestas: 8, Media: 5, PercentReliable: 160.0
+         */
+
+        return userAverages;
     }
 
     public Map<String, Integer> calculateUserAveragesByHour(List<UserEntity> allUsersEntity) {
