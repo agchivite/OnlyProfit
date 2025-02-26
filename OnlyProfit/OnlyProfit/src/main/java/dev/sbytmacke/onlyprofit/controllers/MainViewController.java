@@ -643,7 +643,7 @@ public class MainViewController {
                 } else {
                     if (item.getTotalBets() < item.getAverageBets()) {
                         setStyle("-fx-background-color: #ff6161;");
-                    } else if (item.getTotalBets() / 2  >= item.getAverageBets()) {
+                    } else if ((double) item.getTotalBets() / 1.5  >= item.getAverageBets()) {
                         setStyle("-fx-background-color: #53db78;");
                     }else if (item.getTotalBets() >= item.getAverageBets()) {
                         setStyle("-fx-background-color: orange;");
@@ -934,7 +934,7 @@ public class MainViewController {
         }
 
         if (radioButtonHideGreen.isSelected()) {
-            usersToShow.removeIf(user -> user.getTotalBets() / 2  >= user.getAverageBets());
+            usersToShow.removeIf(user ->  ((double) user.getTotalBets() / 1.5)  >= user.getAverageBets());
         }
 
         if (radioButtonHideOrange.isSelected()) {

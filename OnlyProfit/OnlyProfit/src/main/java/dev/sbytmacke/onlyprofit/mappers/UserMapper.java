@@ -78,7 +78,7 @@ public class UserMapper {
             userAverages.put(username, average);
             System.out.println("[MODE DAY] MEDIA de " + username + " -> " + average);
         }
-        
+
         return userAverages;
     }
 
