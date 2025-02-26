@@ -78,32 +78,7 @@ public class UserMapper {
             userAverages.put(username, average);
             System.out.println("[MODE DAY] MEDIA de " + username + " -> " + average);
         }
-
-        /*// Calcular la media de apuestas de cada usuario
-        Map<String, Integer> userMedians = new HashMap<>();
-        for (Map.Entry<String, List<Integer>> entry : userBetsByDay.entrySet()) {
-            String key = entry.getKey(); // Ejemplo: "Alice-MONDAY"
-
-            // Extraer solo el nombre de usuario (sin el día de la semana)
-            String username = key.split("-")[0];
-
-            Integer average = Statistics.calculateAverage(entry.getValue());
-
-            // Guardar solo el nombre de usuario como clave
-            userMedians.put(username, average);
-            System.out.println("[MODE DAY] MEDIA de " + username + " -> " + average);
-        }*/
-
-                /*
-        [MODE DAY] MEDIA de VV -> 4
-        [MODE DAY] MEDIA de VV -> 1
-        [MODE DAY] MEDIA de VV -> 1
-        [MODE DAY] MEDIA de VV -> 2
-        [MODE DAY] MEDIA de VV -> 1
-        [MODE DAY] MEDIA de VV -> 5
-        Usuario: VV, Apuestas: 8, Media: 5, PercentReliable: 160.0
-         */
-
+        
         return userAverages;
     }
 
